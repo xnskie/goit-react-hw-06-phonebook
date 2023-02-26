@@ -2,24 +2,30 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ContactListItem from 'components/ContactListItem';
 import { List } from './ContactList.styled';
-import { getFilteredContacts } from 'redux/contacts/contacts-selector';
+// import { getAllCons } from 'redux/contacts/contacts-selector';
 import { deleteContact } from 'redux/contacts/contacts-slice';
 import { useSelector, useDispatch } from 'react-redux';
+import { getFilter } from 'redux/filter/filter-selectors';
+import { getAllCons } from 'redux/contacts/contacts-selector';
 
 
 
 function ContactList() {
-  const contacts = useSelector(getFilteredContacts);
+  const contacts = useSelector(getAllCons);
+  console.log(contacts.map(con => con.name))
+  const filter = useSelector(getFilter);
+
   const dispatch = useDispatch();
-  const deleteContacts = (id) => {
-    dispatch(deleteContact(id));
-  };
+
+  const filteredContacts = contacts.filter(({ name }) =>
+    name.toLowerCase().includes(filter)
+  );
 
   return (
     <List>
-      {contacts.contacts.map(({ id, name, number }, idx) => (
+      {filteredContacts.map(({ id, name, number }, idx) => (
         <ContactListItem
-          onDelete={deleteContacts}
+          onDelete={() => dispatch(deleteContact({ id }))}
           name={name}
           number={number}
           id={id}
